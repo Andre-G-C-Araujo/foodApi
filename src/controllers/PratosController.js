@@ -56,11 +56,24 @@ class PratosController {
         .split(",")
         .map((ingredient) => ingredient.trim());
 
-      pratos = await knex("ingredients").whereLike(
-        // De acordo com o video usar WhereIn (porem é sensitive)
-        "name",
-        `${filteredIngredients}`
-      );
+      pratos = await knex("ingredients")
+        .select([
+          "pratos.id",
+          "pratos.name",
+          "pratos.category",
+          "pratos.description",
+          //"pratos.avatar" CASO A FOTO NAO APARECER
+          "pratos.price",
+        ])
+        // .whereIn("ingredients.name", filteredIngredients)
+        .whereLike(
+          // De acordo com o video usar WhereIn (porem é sensitive)
+          "ingredients.name",
+          `%${filteredIngredients}%`
+        )
+        .andWhereLike("pratos.name", `%${name}%`)
+        .innerJoin("pratos", "pratos.id", "ingredients.prato_id")
+        .orderBy("pratos.name");
     } else {
       pratos = await knex("pratos")
         .whereLike("name", `%${name}%`)
@@ -68,7 +81,20 @@ class PratosController {
         .orderBy("name");
     }
 
-    return res.json({ pratos });
+    const PlatesWithIngredients = await knex("ingredients");
+
+    const pratosMapped = pratos.map((plate) => {
+      const plateIngredients = PlatesWithIngredients.filter(
+        (ingredient) => ingredient.prato_id === plate.id
+      );
+
+      return {
+        ...plate,
+        ingredients: plateIngredients,
+      };
+    });
+
+    return res.json(pratosMapped);
   }
 }
 
