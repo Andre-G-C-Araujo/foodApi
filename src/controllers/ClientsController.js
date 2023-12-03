@@ -52,8 +52,8 @@ class ClientsController {
       throw new AppError("Este e-mail já esta cadastrado!");
     }
 
-    user.name = name;
-    user.email = email;
+    user.name = name ?? user.name;
+    user.email = email ?? user.email;
 
     if (password && !old_password) {
       throw new AppError("Precisa informar senha antiga!");
