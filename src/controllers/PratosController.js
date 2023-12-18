@@ -4,7 +4,7 @@ class PratosController {
   async create(req, res) {
     const { name, category, description, price, ingredients } = req.body;
 
-    const { admin_id } = req.params;
+    const admin_id = req.admin.id;
 
     const [prato_id] = await knex("pratos").insert({
       name,
@@ -22,7 +22,7 @@ class PratosController {
 
     await knex("ingredients").insert(ingredientsInsert);
 
-    res.json();
+    return res.json();
   }
 
   async show(req, res) {

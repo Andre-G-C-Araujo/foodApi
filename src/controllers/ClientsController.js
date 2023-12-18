@@ -8,18 +8,16 @@ class ClientsController {
     const { name, email, password } = req.body;
 
     const database = await sqliteConnection();
-    const checkUserExists = await database.get(
+    const checkClientExists = await database.get(
       "SELECT * FROM clients WHERE email = (?)",
       [email]
     );
 
-    if (checkUserExists) {
+    if (checkClientExists) {
       throw new AppError("Este e-mail já está em uso.");
     }
 
     const hashedPassword = await hash(password, 8);
-
-    console.log(hashedPassword);
 
     await database.run(
       "INSERT INTO clients (name, email, password) VALUES (? , ? , ?)",
@@ -32,41 +30,41 @@ class ClientsController {
   async update(req, res) {
     const { name, email, password, old_password } = req.body;
 
-    const { id } = req.params;
+    const client_id = req.client.id;
 
     const database = await sqliteConnection();
-    const user = await database.get("SELECT * FROM clients WHERE id = (?)", [
-      id,
+    const client = await database.get("SELECT * FROM clients WHERE id = (?)", [
+      client_id,
     ]);
 
-    if (!user) {
+    if (!client) {
       throw new AppError("Usúario não encontrado!");
     }
 
-    const userWithUpdatedEmail = await database.get(
+    const clientWithUpdatedEmail = await database.get(
       "SELECT * FROM clients WHERE email = (?)",
       [email]
     );
 
-    if (userWithUpdatedEmail && userWithUpdatedEmail.id !== user.id) {
+    if (clientWithUpdatedEmail && clientWithUpdatedEmail.id !== client.id) {
       throw new AppError("Este e-mail já esta cadastrado!");
     }
 
-    user.name = name ?? user.name;
-    user.email = email ?? user.email;
+    client.name = name ?? client.name;
+    client.email = email ?? client.email;
 
     if (password && !old_password) {
       throw new AppError("Precisa informar senha antiga!");
     }
 
     if (password && old_password) {
-      const checkOldPassword = await compare(old_password, user.password);
+      const checkOldPassword = await compare(old_password, client.password);
 
       if (!checkOldPassword) {
         throw new AppError("A senha antiga não confere.");
       }
 
-      user.password = await hash(password, 8);
+      client.password = await hash(password, 8);
     }
 
     if (password)
@@ -79,7 +77,7 @@ class ClientsController {
       updated_at = DATETIME('now'),
        id = ?
     `,
-        [user.name, user.email, user.password, user.id]
+        [client.name, client.email, client.password, client_id]
       );
 
     return res.json();
