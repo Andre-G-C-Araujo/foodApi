@@ -1,4 +1,6 @@
 const { Router } = require("express");
+const multer = require("multer");
+const uploadConfig = require("../configs/upload");
 
 const PratosController = require("../controllers/PratosController");
 const ensureAuthenticatedAdmin = require("../middlewares/ensureAuthenticatedAdmin");
@@ -6,12 +8,16 @@ const ensureAuthenticatedAdmin = require("../middlewares/ensureAuthenticatedAdmi
 const pratosController = new PratosController();
 
 const pratosRoutes = Router();
-
-pratosRoutes.use(ensureAuthenticatedAdmin);
+const upload = multer(uploadConfig.MULTER);
 
 pratosRoutes.get("/", pratosController.index);
-pratosRoutes.post("/", pratosController.create);
+pratosRoutes.post(
+  "/",
+  ensureAuthenticatedAdmin,
+  upload.single("avatar"),
+  pratosController.create
+);
 pratosRoutes.get("/:id", pratosController.show);
-pratosRoutes.delete("/:id", pratosController.delete);
+pratosRoutes.delete("/:id", ensureAuthenticatedAdmin, pratosController.delete);
 
 module.exports = pratosRoutes;

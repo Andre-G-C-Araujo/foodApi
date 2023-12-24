@@ -1,4 +1,5 @@
 const fs = require("fs");
+
 const path = require("path");
 const uploadConfig = require("../configs/upload");
 
@@ -22,6 +23,10 @@ class DiskStorage {
     }
 
     await fs.promises.unlink(filePath);
+  }
+
+  async verifyCreateFile(file) {
+    fs.existsSync(path.resolve(uploadConfig.UPLOADS_FOLDER, file));
   }
 }
 

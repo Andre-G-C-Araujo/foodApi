@@ -1,15 +1,30 @@
 const knex = require("../database/knex");
 
+//pra baixo apagar
+const DiskStorage = require("../providers/DiskStorage");
+const crypto = require("crypto");
+
+const diskStorage = new DiskStorage();
+
 class PratosController {
   async create(req, res) {
-    const { name, category, description, price, ingredients } = req.body;
-
+    const { name, category, description, price, avatar, ingredients } =
+      req.body;
     const admin_id = req.admin.id;
+
+    const fileHash = crypto.randomBytes(19).toString("hex");
+    const fileName = `${fileHash}-${avatar}`;
+    console.log(fileName);
+
+    // await diskStorage.saveFile(fileName); // Onde parei? Consegui criptografar e salvar no banco de dados a ref criptografada..
+    // // porem nao consigo salvar o arquivo com o nome, em uploads... verificar o que tava faznedo antes..
+    // //Pq estava salvando.
 
     const [prato_id] = await knex("pratos").insert({
       name,
       category,
       description,
+      avatar: fileName,
       price,
       admin_id,
     });
@@ -62,7 +77,7 @@ class PratosController {
           "pratos.name",
           "pratos.category",
           "pratos.description",
-          //"pratos.avatar" CASO A FOTO NAO APARECER
+          "pratos.avatar",
           "pratos.price",
         ])
         // .whereIn("ingredients.name", filteredIngredients)

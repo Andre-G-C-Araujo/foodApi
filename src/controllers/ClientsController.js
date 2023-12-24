@@ -67,18 +67,16 @@ class ClientsController {
       client.password = await hash(password, 8);
     }
 
-    if (password)
-      await database.run(
-        `
-    UPDATE or IGNORE clients SET
+    await database.run(
+      `UPDATE or IGNORE clients SET
      name = ?, 
      email = ?,
      password =?,
       updated_at = DATETIME('now'),
        id = ?
     `,
-        [client.name, client.email, client.password, client_id]
-      );
+      [client.name, client.email, client.password, client_id]
+    );
 
     return res.json();
   }
