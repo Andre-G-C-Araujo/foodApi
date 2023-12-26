@@ -49,7 +49,10 @@ class PratosController {
 
   async index(req, res) {
     const { name, category, ingredients } = req.query;
+
     let pratos;
+
+    console.log(req);
 
     if (ingredients) {
       const filteredIngredients = ingredients
