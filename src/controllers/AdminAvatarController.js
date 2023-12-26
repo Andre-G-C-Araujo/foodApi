@@ -10,7 +10,6 @@ class AdminAvatarController {
     const diskStorage = new DiskStorage();
 
     const admin = await knex("admin").where({ id: admin_id }).first();
-
     if (!admin) {
       throw new AppError(
         "Somente usuários autenticados podem mudar o avatar",

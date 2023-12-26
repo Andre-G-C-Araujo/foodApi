@@ -14,8 +14,13 @@ pratosRoutes.get("/", pratosController.index);
 pratosRoutes.post(
   "/",
   ensureAuthenticatedAdmin,
-  upload.single("avatar"),
+
   pratosController.create
+);
+pratosRoutes.patch(
+  "/avatar",
+  upload.single("avatar"),
+  pratosController.createPhotoRef
 );
 pratosRoutes.get("/:id", pratosController.show);
 pratosRoutes.delete("/:id", ensureAuthenticatedAdmin, pratosController.delete);
