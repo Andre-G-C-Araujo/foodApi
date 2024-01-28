@@ -50,9 +50,8 @@ class PratosController {
   async index(req, res) {
     const { name, category, ingredients } = req.query;
 
+    console.log(name);
     let pratos;
-
-    console.log(req);
 
     if (ingredients) {
       const filteredIngredients = ingredients

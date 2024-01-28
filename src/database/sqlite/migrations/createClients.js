@@ -4,7 +4,8 @@ CREATE TABLE IF NOT EXISTS clients  (
     name VARCHAR, 
     email VARCHAR,
     password VARCHAR,
-    avatar VARCHAR NULL,     
+    avatar VARCHAR NULL,
+    favorites VARCHAR NULL,    
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP)`;
 
