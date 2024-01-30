@@ -9,10 +9,24 @@ class PratoEditController {
       price,
       description,
       ingredients,
-      // oldIngredients,
+      oldIngredients,
       avatar,
       prato_id,
     } = req.body;
+
+    //Precisa retornar ou id ou name.
+    //Comparar qual nao bate (está fora da lista);
+    //Pegar o que está fora, e passar pro knex pra deletar
+
+    const ingredientsDb = await knex("ingredients").where({ prato_id });
+    if (oldIngredients.length >= 1) {
+      if (oldIngredients.length !== ingredientsDb.length) {
+        await knex("ingredients").where({ prato_id }).delete();
+        await knex("ingredients").insert(oldIngredients);
+      }
+    } else {
+      await knex("ingredients").where({ prato_id }).delete();
+    }
 
     if (ingredients.length > 0) {
       const ingredientsInsert = ingredients.map((name) => {
@@ -31,10 +45,6 @@ class PratoEditController {
       throw new AppError("Prato não existe");
     }
 
-    // const ingredientsDb = await knex("ingredients").where({ prato_id });
-
-    // const ingredientsMapped = ingredientsDb.map((item) => item.name);
-
     prato.name = name ?? prato.name;
     prato.category = category ?? prato.category;
     prato.price = price ?? prato.price;
@@ -46,6 +56,7 @@ class PratoEditController {
         name,
         category,
         description,
+
         price,
         avatar,
       })
